@@ -2,7 +2,7 @@
 # Install all the packages
 #==============
 sudo chown -R $(whoami):admin /usr/local
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew doctor
 brew update
 
@@ -33,7 +33,15 @@ link_files () {
     ln -s ~/dotfiles/custom-configs/**/$1 $2
     success "linked $HOME/dotfiles/custom-configs/$1 to $2"
   else
-    ln -s ~/dotfiles/$1 $2
+    case "$1" in
+      zshrc )
+        ln -s $HOME/dotfiles/zsh/$1 $2;;
+      zsh_prompt )
+        ln -s $HOME/dotfiles/zsh/$1 $2;;
+      * )
+        ln -s ~/dotfiles/$1 $2;;
+    esac
+
     success "linked $HOME/dotfiles/$1 to $2"
   fi
 }
@@ -45,23 +53,24 @@ overwrite_all=false
 backup_all=false
 skip_all=false
 
-for f in {vim,vimrc,bashrc,tmux,tmux.conf,zsh_prompt,zshrc,gitconfig,psqlrc,tigrc,config,Brewfile}; 
+for name in vim vimrc bashrc tmux tmux.conf zsh_prompt zshrc gitconfig psqlrc tigrc config Brewfile  
 do 
-    if [ $f eq "Brewfile" ];
+    if [ $name = "Brewfile" ]
     then 
-      dest="$HOME/$f"
+      dest="$HOME/$name"
     else
-      dest="$HOME/.$f"
+      dest="$HOME/.$name"
     fi
-    source=$f
-    if [ -f $dest ] || [ -d $dest ] 
+    source=$name
+    echo " Processing $name..."
+    if [ -e $dest ] || [ -d $dest ] 
     then
       overwite=false
       backup=false
       skip=false
       if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
       then
-        user "File already exists: `basename $source`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        user "File already exists: `basename $dest`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
         read -n 1 action
 
         case "$action" in
@@ -84,6 +93,7 @@ do
 
       if [ "$overwrite" == "true" ] || [ "$overwrite_all" == "true" ]
       then
+        echo "removing $dest"
         rm -rf $dest
         success "removed $dest"
       fi
@@ -100,6 +110,9 @@ do
       else
         success "skipped $source"
       fi
+    else
+      link_files $source $dest
+    fi
 done
    
 
