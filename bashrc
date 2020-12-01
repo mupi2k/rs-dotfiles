@@ -47,3 +47,13 @@ alias .....='cd ../../../..'
 alias ls='ls --color'
 # Empty the trash folder that is created when you delete things as root
 alias root_trash='sudo bash -c "exec rm -r /root/.local/share/Trash/{files,info}/*"'
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/Users/mike.porter/.pyenv/shims:~/.pyenv/shims:/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/Users/mike.porter/.pyenv/shims:~/.pyenv/shims:/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n
+export PATH='/usr/local/bin:/Users/mike.porter/.pyenv/shims:/Users/mike.porter/.pyenv/shims:~/.pyenv/shims:/usr/local/bin:/Users/mike.porter/.pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'\n

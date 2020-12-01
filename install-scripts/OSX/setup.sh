@@ -30,7 +30,7 @@ fail () {
 
 link_files () {
   if [ -n "$(find ~/dotfiles/custom-configs -name $1)" ]; then
-    ln -s ~/dotfiles/custom-configs/**/$1 $2
+    ln -s ~/dotfiles/custom-configs/$1 $2
     success "linked $HOME/dotfiles/custom-configs/$1 to $2"
   else
     case "$1" in
@@ -53,17 +53,17 @@ overwrite_all=false
 backup_all=false
 skip_all=false
 
-for name in vim vimrc bashrc tmux tmux.conf zsh_prompt zshrc gitconfig psqlrc tigrc config Brewfile  
-do 
+for name in vim vimrc bashrc tmux tmux.conf zsh_prompt zshrc gitconfig psqlrc tigrc config Brewfile
+do
     if [ $name = "Brewfile" ]
-    then 
+    then
       dest="$HOME/$name"
     else
       dest="$HOME/.$name"
     fi
     source=$name
     echo " Processing $name..."
-    if [ -e $dest ] || [ -d $dest ] 
+    if [ -e $dest ] || [ -d $dest ]
     then
       overwite=false
       backup=false
@@ -114,7 +114,7 @@ do
       link_files $source $dest
     fi
 done
-   
+
 
 cd ~
 brew bundle
