@@ -10,79 +10,98 @@ brew update
 echo "export PATH='/usr/local/bin:$PATH'\n" >> ~/.bashrc
 source ~/.bashrc
 
+info () {
+  printf "  [ \033[00;34m..\033[0m ] $1"
+}
+
+user () {
+  printf "\r  [ \033[0;33m?\033[0m ] $1 "
+}
+
+success () {
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+}
+
+fail () {
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+  echo ''
+  exit
+}
+
+link_files () {
+  if [ -n "$(find ~/dotfiles/custom-configs -name $1)" ]; then
+    ln -s ~/dotfiles/custom-configs/**/$1 $2
+    success "linked $HOME/dotfiles/custom-configs/$1 to $2"
+  else
+    ln -s ~/dotfiles/$1 $2
+    success "linked $HOME/dotfiles/$1 to $2"
+  fi
+}
+
 #==============
 # Remove old dot flies
 #==============
-sudo rm -rf ~/.vim > /dev/null 2>&1
-sudo rm -rf ~/.vimrc > /dev/null 2>&1
-sudo rm -rf ~/.bashrc > /dev/null 2>&1
-sudo rm -rf ~/.tmux > /dev/null 2>&1
-sudo rm -rf ~/.tmux.conf > /dev/null 2>&1
-sudo rm -rf ~/.zsh_prompt > /dev/null 2>&1
-sudo rm -rf ~/.zshrc > /dev/null 2>&1
-sudo rm -rf ~/.gitconfig > /dev/null 2>&1
-sudo rm -rf ~/.psqlrc > /dev/null 2>&1
-sudo rm -rf ~/.tigrc > /dev/null 2>&1
-sudo rm -rf ~/.config > /dev/null 2>&1
-sudo rm -rf ~/Brewfile > /dev/null 2>&1
+overwrite_all=false
+backup_all=false
+skip_all=false
 
-#==============
-# Create symlinks in the home folder
-# Allow overriding with files of matching names in the custom-configs dir
-#==============
-SYMLINKS=()
-ln -sf ~/dotfiles/vim ~/.vim
-SYMLINKS+=('.vim')
-ln -sf ~/dotfiles/vimrc ~/.vimrc
-SYMLINKS+=('.vimrc')
-ln -sf ~/dotfiles/bashrc ~/.bashrc
-SYMLINKS+=('.bashrc')
-ln -sf ~/dotfiles/mac-tmux ~/.tmux
-SYMLINKS+=('.tmux')
-ln -sf ~/dotfiles/zsh/zsh_prompt ~/.zsh_prompt
-SYMLINKS+=('.zsh_prompt')
-ln -sf ~/dotfiles/zsh/zshrc ~/.zshrc
-SYMLINKS+=('.zshrc')
-ln -sf ~/dotfiles/config ~/.config
-SYMLINKS+=('.config')
-ln -sf ~/dotfiles/custom-configs/custom-snips ~/.vim/custom-snips
-SYMLINKS+=('.vim/custom-snips')
-ln -sf ~/dotfiles/homebrew/Brewfile ~/Brewfile
-SYMLINKS+=('Brewfile')
+for f in {vim,vimrc,bashrc,tmux,tmux.conf,zsh_prompt,zshrc,gitconfig,psqlrc,tigrc,config,Brewfile}; 
+do 
+    if [ $f eq "Brewfile" ];
+    then 
+      dest="$HOME/$f"
+    else
+      dest="$HOME/.$f"
+    fi
+    source=$f
+    if [ -f $dest ] || [ -d $dest ] 
+    then
+      overwite=false
+      backup=false
+      skip=false
+      if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+      then
+        user "File already exists: `basename $source`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        read -n 1 action
 
+        case "$action" in
+          o )
+            overwrite=true;;
+          O )
+            overwrite_all=true;;
+          b )
+            backup=true;;
+          B )
+            backup_all=true;;
+          s )
+            skip=true;;
+          S )
+            skip_all=true;;
+          * )
+            ;;
+        esac
+      fi
 
-if [ -n "$(find ~/dotfiles/custom-configs -name gitconfig)" ]; then
-    ln -s ~/dotfiles/custom-configs/**/gitconfig ~/.gitconfig
-else
-    ln -s ~/dotfiles/gitconfig ~/.gitconfig
-fi
-SYMLINKS+=('.gitconfig')
+      if [ "$overwrite" == "true" ] || [ "$overwrite_all" == "true" ]
+      then
+        rm -rf $dest
+        success "removed $dest"
+      fi
 
-if [ -n "$(find ~/dotfiles/custom-configs -name tmux.conf)" ]; then
-    ln -s ~/dotfiles/custom-configs/**/tmux.conf ~/.tmux.conf
-else
-    ln -s ~/dotfiles/mac-tmux/tmux.conf ~/.tmux.conf
-fi
-SYMLINKS+=('.tmux.conf')
+      if [ "$backup" == "true" ] || [ "$backup_all" == "true" ]
+      then
+        mv $dest $dest\.backup
+        success "moved $dest to $dest.backup"
+      fi
 
-if [ -n "$(find ~/dotfiles/custom-configs -name tigrc)" ]; then
-    ln -s ~/dotfiles/custom-configs/**/tigrc ~/.tigrc
-else
-    ln -s ~/dotfiles/tigrc ~/.tigrc
-fi
-SYMLINKS+=('.tigrc')
-
-if [ -n "$(find ~/dotfiles/custom-configs -name psqlrc)" ]; then
-    ln -s ~/dotfiles/custom-configs/**/psqlrc ~/.psqlrc
-else
-    ln -s ~/dotfiles/psqlrc ~/.psqlrc
-fi
-SYMLINKS+=('.psqlrc')
-
-echo ${SYMLINKS[@]}
-
-# hack for... I'm not even sure what... sqlite working in Python with pyenv?
-sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+      if [ "$skip" == "false" ] && [ "$skip_all" == "false" ]
+      then
+        link_files $source $dest
+      else
+        success "skipped $source"
+      fi
+done
+   
 
 cd ~
 brew bundle
@@ -98,4 +117,4 @@ chsh -s /bin/zsh
 #==============
 echo -e "\n====== All Done!! ======\n"
 echo
-echo "Enjoy -Matt"
+echo "Enjoy -Mike"
